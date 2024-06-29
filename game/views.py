@@ -74,6 +74,15 @@ class LobbyView(generics.RetrieveUpdateDestroyAPIView):
     queryset  = Lobby.objects.all()
     serializer_class = LobbySerializer
     lookup_field = 'lobby_code'
-    
+     
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+    
+    # include lobby code in method parameters
+    def patch(self, request, lobby_code, *args, **kwargs):
+        
+        lobby = Lobby.objects.get(lobby_code=lobby_code)
+        user = CustomUser.objects.get(username=self.request.data['player']['username']) # retrieve user using frontend request data
+        
+        lobby.players.add(user)
+        return super().patch(request, *args, **kwargs)
